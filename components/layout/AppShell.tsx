@@ -17,6 +17,7 @@ import {
   Radio,
   Music,
   Video,
+  Sparkles,
   Settings as SettingsIcon,
 } from "lucide-react";
 
@@ -32,6 +33,7 @@ export default function AppShell({ children, workspaceName, role }: Props) {
 
   const navItems = [
     { label: "Home", href: "/", icon: Home },
+    { label: "Sangat", href: "/sangat", icon: Sparkles },
     { label: "Booking", href: "/booking-request", icon: CalendarPlus },
     { label: "Events", href: "/events", icon: HeartHandshake },
     { label: "Live", href: "/live-satsang", icon: Radio },
