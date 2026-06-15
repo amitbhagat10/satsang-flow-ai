@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import InstallAppButton from "@/components/pwa/InstallAppButton";
@@ -11,16 +12,16 @@ import {
   ReceiptText,
   DollarSign,
   Users,
-  UserCheck,
-  Briefcase,
   LogOut,
   Home,
   ChevronRight,
   Radio,
   Music,
   Video,
-  Sparkles,
   Settings as SettingsIcon,
+  UserCheck,
+  Briefcase,
+  Sparkles,
 } from "lucide-react";
 
 type Props = {
@@ -29,25 +30,74 @@ type Props = {
   role?: string | null;
 };
 
+type MemberRole = "admin" | "sevadar" | "sangat" | null;
+
 export default function AppShell({ children, workspaceName, role }: Props) {
   const pathname = usePathname();
   const router = useRouter();
 
-  const navItems = [
-    { label: "Home", href: "/", icon: Home },
-    { label: "Sangat", href: "/sangat", icon: Sparkles },
-    { label: "Booking", href: "/booking-request", icon: CalendarPlus },
-    { label: "Events", href: "/events", icon: HeartHandshake },
-    { label: "Live", href: "/live-satsang", icon: Radio },
-    { label: "Studio", href: "/live-studio", icon: Video },
-    { label: "Radio", href: "/radio-library", icon: Music },
-    { label: "Donations", href: "/donations", icon: DollarSign },
-    { label: "Expenses", href: "/expenses", icon: ReceiptText },
-    { label: "Sevadar", href: "/sevadar", icon: Users },
-    { label: "My Seva", href: "/my-seva", icon: Briefcase },
-    { label: "Members", href: "/admin-members", icon: UserCheck },
-    { label: "Settings", href: "/settings", icon: SettingsIcon },
-  ];
+  const [memberRole, setMemberRole] = useState<MemberRole>(null);
+
+  const isAdmin = role === "owner" || role === "admin" || memberRole === "admin";
+  const isSevadar = memberRole === "sevadar";
+
+  async function loadMemberRole() {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return;
+
+    const { data } = await supabase
+      .schema("satsangflow")
+      .from("member_profiles")
+      .select("role,status")
+      .eq("user_id", user.id)
+      .eq("status", "approved")
+      .maybeSingle();
+
+    if (data?.role) {
+      setMemberRole(data.role as MemberRole);
+    }
+  }
+
+  useEffect(() => {
+    loadMemberRole();
+  }, []);
+
+  const navItems = useMemo(() => {
+    const sangatItems = [
+      { label: "Sangat", href: "/sangat", icon: Sparkles },
+      { label: "Booking", href: "/booking-request", icon: CalendarPlus },
+      { label: "Events", href: "/events", icon: HeartHandshake },
+      { label: "Live", href: "/live-satsang", icon: Radio },
+    ];
+
+    const sevadarItems = [
+      ...sangatItems,
+      { label: "My Seva", href: "/my-seva", icon: Briefcase },
+    ];
+
+    const adminItems = [
+      { label: "Dashboard", href: "/", icon: Home },
+      { label: "Sangat", href: "/sangat", icon: Sparkles },
+      { label: "Bookings", href: "/booking-request", icon: CalendarPlus },
+      { label: "Events", href: "/events", icon: HeartHandshake },
+      { label: "Live", href: "/live-satsang", icon: Radio },
+      { label: "Studio", href: "/live-studio", icon: Video },
+      { label: "Radio Library", href: "/radio-library", icon: Music },
+      { label: "Donations", href: "/donations", icon: DollarSign },
+      { label: "Expenses", href: "/expenses", icon: ReceiptText },
+      { label: "Sevadar", href: "/sevadar", icon: Users },
+      { label: "My Seva", href: "/my-seva", icon: Briefcase },
+      { label: "Members", href: "/admin-members", icon: UserCheck },
+      { label: "Settings", href: "/settings", icon: SettingsIcon },
+    ];
+
+    if (isAdmin) return adminItems;
+    if (isSevadar) return sevadarItems;
+    return sangatItems;
+  }, [isAdmin, isSevadar]);
 
   async function handleLogout() {
     await supabase.auth.signOut();
@@ -56,7 +106,6 @@ export default function AppShell({ children, workspaceName, role }: Props) {
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#fff7ec] text-[#34170d]">
-      {/* DESKTOP SIDEBAR */}
       <aside className="fixed left-0 top-0 hidden h-screen w-[310px] overflow-hidden bg-gradient-to-b from-[#4b0711] via-[#5d0b14] to-[#210306] text-white shadow-2xl xl:block">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#ffb84a33,transparent_35%),radial-gradient(circle_at_bottom,#ff3f6d22,transparent_38%)]" />
 
@@ -79,7 +128,11 @@ export default function AppShell({ children, workspaceName, role }: Props) {
             </h1>
 
             <p className="mx-auto mt-3 max-w-[220px] text-xs leading-5 text-white/75">
-              Bookings, donations, radio and live satsang management.
+              {isAdmin
+                ? "Admin control centre"
+                : isSevadar
+                ? "Sevadar seva and sangat access"
+                : "Sangat app access"}
             </p>
           </div>
 
@@ -121,12 +174,15 @@ export default function AppShell({ children, workspaceName, role }: Props) {
       </aside>
 
       <div className="xl:pl-[310px]">
-        {/* MOBILE HEADER */}
         <header className="sticky top-0 z-30 border-b border-[#efd7b7] bg-[#fff7ec]/95 px-4 py-3 backdrop-blur-xl xl:px-8 xl:py-6">
           <div className="mx-auto flex max-w-7xl items-center justify-between gap-3">
             <div className="min-w-0">
               <p className="truncate text-[10px] font-black uppercase tracking-[0.22em] text-[#d94a12] sm:text-xs">
-                SevaSangam Portal
+                {isAdmin
+                  ? "Admin Portal"
+                  : isSevadar
+                  ? "Sevadar Portal"
+                  : "Sangat Portal"}
               </p>
 
               <h2 className="mt-1 truncate font-serif text-xl font-bold text-[#32170d] sm:text-3xl xl:text-4xl">
@@ -136,7 +192,7 @@ export default function AppShell({ children, workspaceName, role }: Props) {
 
             <div className="flex shrink-0 items-center gap-2">
               <div className="hidden rounded-full bg-white px-4 py-2 text-xs font-black text-[#d94a12] shadow md:block">
-                {role ? role.toUpperCase() : "USER"}
+                {isAdmin ? "ADMIN" : isSevadar ? "SEVADAR" : "SANGAT"}
               </div>
 
               <img
@@ -148,7 +204,6 @@ export default function AppShell({ children, workspaceName, role }: Props) {
           </div>
         </header>
 
-        {/* MOBILE QUICK MENU */}
         <div className="sticky top-[73px] z-20 overflow-x-auto border-b border-orange-100 bg-white/95 px-3 py-2 shadow-sm backdrop-blur xl:hidden">
           <div className="flex gap-2">
             {navItems.map((item) => {
@@ -185,10 +240,9 @@ export default function AppShell({ children, workspaceName, role }: Props) {
           {children}
         </main>
 
-        {/* MOBILE BOTTOM NAV */}
         <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-orange-100 bg-white/95 px-2 py-2 shadow-[0_-10px_30px_rgba(120,53,15,0.12)] backdrop-blur-xl xl:hidden">
-          <div className="grid grid-cols-5 gap-1">
-            {navItems.slice(0, 5).map((item) => {
+          <div className="grid grid-cols-4 gap-1">
+            {navItems.slice(0, 4).map((item) => {
               const Icon = item.icon;
               const active = pathname === item.href;
 
