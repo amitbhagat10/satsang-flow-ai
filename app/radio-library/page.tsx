@@ -128,6 +128,25 @@ export default function RadioLibraryPage() {
     loadPage();
   }
 
+
+  async function deleteTrack(track: Track) {
+    const confirmed = window.confirm(`Remove "${track.title}" from playlist?`);
+    if (!confirmed) return;
+
+    const { error } = await supabase
+      .schema("satsangflow")
+      .from("radio_tracks")
+      .delete()
+      .eq("id", track.id);
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    loadPage();
+  }
+
   useEffect(() => {
     loadPage();
   }, []);
@@ -223,16 +242,25 @@ export default function RadioLibraryPage() {
                   <audio controls src={track.audio_url} className="mt-2 w-full max-w-sm" />
                 </div>
 
-                <button
-                  onClick={() => toggleActive(track)}
-                  className={`shrink-0 rounded-full px-4 py-2 text-xs font-bold ${
-                    track.active
-                      ? "bg-green-100 text-green-700"
-                      : "bg-gray-100 text-gray-600"
-                  }`}
-                >
-                  {track.active ? "Active" : "Inactive"}
-                </button>
+                <div className="flex shrink-0 gap-2">
+                  <button
+                    onClick={() => toggleActive(track)}
+                    className={`rounded-full px-4 py-2 text-xs font-bold ${
+                      track.active
+                        ? "bg-green-100 text-green-700"
+                        : "bg-gray-100 text-gray-600"
+                    }`}
+                  >
+                    {track.active ? "Active" : "Inactive"}
+                  </button>
+
+                  <button
+                    onClick={() => deleteTrack(track)}
+                    className="rounded-full bg-red-100 px-4 py-2 text-xs font-bold text-red-700 hover:bg-red-200"
+                  >
+                    Remove
+                  </button>
+                </div>
               </div>
             ))}
           </div>

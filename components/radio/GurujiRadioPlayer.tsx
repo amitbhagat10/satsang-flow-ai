@@ -66,7 +66,7 @@ export default function GurujiRadioPlayer() {
   if (tracks.length === 0) return null;
 
   return (
-    <div className="fixed bottom-5 left-1/2 z-50 w-[92%] max-w-xl -translate-x-1/2 rounded-full border border-orange-200 bg-white/95 p-2 shadow-2xl backdrop-blur-xl xl:left-[calc(50%+155px)]">
+    <div className="fixed bottom-24 left-1/2 z-50 w-[92%] max-w-xl -translate-x-1/2 rounded-full border border-orange-200 bg-white/95 p-2 shadow-2xl backdrop-blur-xl xl:bottom-5 xl:left-[calc(50%+155px)]">
       <audio
         ref={audioRef}
         src={currentTrack?.audio_url}
