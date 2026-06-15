@@ -91,7 +91,7 @@ export default function LiveSatsangPage() {
 
     await pc.setRemoteDescription({
       type: "offer",
-      sdp: liveSession.offer_sdp,
+      sdp: liveSession.offer_sdp ?? undefined,
     });
 
     const answer = await pc.createAnswer();
