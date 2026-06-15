@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import AppShell from "@/components/layout/AppShell";
 import { getMyWorkspace } from "@/lib/workspace";
 import { supabase } from "@/lib/supabase";
-import { CheckCircle, UserCheck, XCircle } from "lucide-react";
+import { CheckCircle, UserCheck, XCircle, ShieldMinus, Ban } from "lucide-react";
 
 type Workspace = { id: string; name: string; slug: string };
 
@@ -55,17 +55,17 @@ export default function AdminMembersPage() {
     return `GMM-${Math.floor(100000 + Math.random() * 900000)}`;
   }
 
-  async function updateMember(member: Member, newStatus: string, newRole?: string) {
+  async function updateMember(member: Member, status: string, newRole?: string) {
     const { data: userData } = await supabase.auth.getUser();
 
     const { error } = await supabase
       .schema("satsangflow")
       .from("member_profiles")
       .update({
-        status: newStatus,
+        status,
         role: newRole || member.role,
         member_number: member.member_number || makeMemberNumber(),
-        approved_at: newStatus === "approved" ? new Date().toISOString() : null,
+        approved_at: status === "approved" ? new Date().toISOString() : null,
         approved_by: userData.user?.id,
       })
       .eq("id", member.id);
@@ -90,15 +90,15 @@ export default function AdminMembersPage() {
     <AppShell workspaceName={workspace.name} role={role}>
       <section className="mb-6 rounded-[2rem] bg-white p-8 shadow-[0_20px_55px_rgba(120,53,15,0.16)]">
         <p className="text-sm font-black uppercase tracking-[0.28em] text-[#d94a12]">
-          Admin Approval
+          Admin Control
         </p>
 
         <h1 className="mt-4 font-serif text-5xl font-bold text-[#35170c]">
-          Member Approvals
+          Members & Access
         </h1>
 
         <p className="mt-4 max-w-2xl text-gray-600">
-          Approve Sangat registrations and mark selected members as Sevadar.
+          Approve Sangat, promote to Sevadar, remove Sevadar access, or deactivate members.
         </p>
       </section>
 
@@ -137,11 +137,27 @@ export default function AdminMembersPage() {
                       className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-4 py-2 text-xs font-bold text-blue-700"
                     >
                       <UserCheck size={15} />
-                      Approve Sevadar
+                      Make Sevadar
                     </button>
 
                     <button
-                      onClick={() => updateMember(member, "rejected")}
+                      onClick={() => updateMember(member, "approved", "sangat")}
+                      className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-4 py-2 text-xs font-bold text-amber-700"
+                    >
+                      <ShieldMinus size={15} />
+                      Remove Sevadar
+                    </button>
+
+                    <button
+                      onClick={() => updateMember(member, "inactive", member.role)}
+                      className="inline-flex items-center gap-1 rounded-full bg-gray-200 px-4 py-2 text-xs font-bold text-gray-700"
+                    >
+                      <Ban size={15} />
+                      Deactivate
+                    </button>
+
+                    <button
+                      onClick={() => updateMember(member, "rejected", member.role)}
                       className="inline-flex items-center gap-1 rounded-full bg-red-100 px-4 py-2 text-xs font-bold text-red-700"
                     >
                       <XCircle size={15} />
