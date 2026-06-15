@@ -1,0 +1,22 @@
+{
+  "name": "SevaSangam - Guruji Mandir Melbourne",
+  "short_name": "SevaSangam",
+  "description": "Bookings, donations, expenses, live satsang and seva management.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fff7ec",
+  "theme_color": "#5d0b14",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/guruji-logo.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "/guruji-logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
