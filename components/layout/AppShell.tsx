@@ -156,7 +156,33 @@ export default function AppShell({ children, workspaceName, role }: Props) {
           </div>
         </header>
 
-        <main className="mx-auto max-w-7xl px-8 py-8">{children}</main>
+
+        <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-orange-100 bg-white/95 px-2 py-2 shadow-[0_-10px_30px_rgba(120,53,15,0.12)] backdrop-blur-xl xl:hidden">
+          <div className="grid grid-cols-5 gap-1">
+            {navItems.slice(0, 5).map((item) => {
+              const Icon = item.icon;
+              const active = pathname === item.href;
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`flex flex-col items-center justify-center rounded-2xl px-2 py-2 text-[10px] font-bold ${
+                    active
+                      ? "bg-[#fff3e4] text-[#e95414]"
+                      : "text-gray-500"
+                  }`}
+                >
+                  <Icon size={20} />
+                  <span className="mt-1 truncate">{item.label.replace("Satsang ", "")}</span>
+                </Link>
+              );
+            })}
+          </div>
+        </nav>
+
+
+        <main className="mx-auto max-w-7xl px-4 pb-28 pt-5 sm:px-6 xl:px-8 xl:py-8">{children}</main>
       </div>
       <GurujiRadioPlayer />
       <InstallAppButton />
