@@ -17,6 +17,7 @@ import {
   Radio,
   Music,
   Video,
+  Settings as SettingsIcon,
 } from "lucide-react";
 
 type Props = {
@@ -39,6 +40,7 @@ export default function AppShell({ children, workspaceName, role }: Props) {
     { label: "Donations", href: "/donations", icon: DollarSign },
     { label: "Expenses", href: "/expenses", icon: ReceiptText },
     { label: "Staff", href: "/staff", icon: Users },
+    { label: "Settings", href: "/settings", icon: SettingsIcon },
   ];
 
   async function handleLogout() {
