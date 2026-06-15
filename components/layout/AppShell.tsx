@@ -11,6 +11,7 @@ import {
   ReceiptText,
   DollarSign,
   Users,
+  Briefcase,
   LogOut,
   Home,
   ChevronRight,
@@ -41,7 +42,8 @@ export default function AppShell({ children, workspaceName, role }: Props) {
     { label: "Radio", href: "/radio-library", icon: Music },
     { label: "Donations", href: "/donations", icon: DollarSign },
     { label: "Expenses", href: "/expenses", icon: ReceiptText },
-    { label: "Staff", href: "/staff", icon: Users },
+    { label: "Sevadar", href: "/sevadar", icon: Users },
+    { label: "My Seva", href: "/my-seva", icon: Briefcase },
     { label: "Settings", href: "/settings", icon: SettingsIcon },
   ];
 
