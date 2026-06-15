@@ -181,7 +181,7 @@ export default function AppShell({ children, workspaceName, role }: Props) {
           </div>
         </div>
 
-        <main className="mx-auto max-w-7xl px-3 pb-36 pt-4 sm:px-5 xl:px-8 xl:py-8">
+        <main className="mx-auto max-w-7xl px-3 pb-44 pt-4 sm:px-5 xl:px-8 xl:pb-32 xl:pt-8">
           {children}
         </main>
 
